@@ -68,6 +68,7 @@ class Game extends React.Component {
 
 	componentDidMount() {
 		document.getElementById('0,0').appendChild(document.getElementById('player'))
+		if (document.getElementById('input')) { document.getElementById('input').focus() }
 	}
 
 	render() {
