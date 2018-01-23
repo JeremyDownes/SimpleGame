@@ -27,10 +27,7 @@ class Square extends React.Component {
 
 						// below we render a button with a value equal to its index that will be recalled on click. Button will display content at the index of playerBoard
 	render() {
-		let red = Math.floor(Math.random()*256)
-		let green = Math.floor(Math.random()*256)
-		let blue = Math.floor(Math.random()*256)
-		this.style = {height: '10vh', backgroundColor: `rgb(${red},${green},${blue})`};
+		this.style = {height: '10vh'};
 		let content = this.props.board.playerBoard[this.position[0]][this.position[1]]
 
 
@@ -42,7 +39,6 @@ class Square extends React.Component {
 				style={this.style}
 				id = {this.position}
 			>
-	  		{this.position}
 		  </div>
 		)
 	}

@@ -71,7 +71,7 @@ class Game extends React.Component {
 	}
 
 	render() {
-		if (document.getElementById('player')) { document.getElementById('player').focus() }
+		if (document.getElementById('input')) { document.getElementById('input').focus() }
 		return (
 			<div>			
 				<Player position = {this.state.playerPosition} move={this.move}/>

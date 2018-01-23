@@ -14,7 +14,12 @@ class Player extends React.Component {
 	}
 
 	render() {
-		return <input type='text' id='player' value={this.props.position} onKeyUp={this.handleKeyPress}></input>
+		return (
+			<div id='player'>
+				<img src='https://orig00.deviantart.net/3d23/f/2008/092/6/6/some_pissed_off_little_guy_by_rongs1234.jpg'/>
+				<input id='input' type='text' value={this.props.position} onKeyUp={this.handleKeyPress}></input>
+			</div>
+		)
 	}
 }
 
