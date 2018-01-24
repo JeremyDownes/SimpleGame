@@ -1,6 +1,7 @@
 import React from 'react'
 import '../../reset.css'
 import './Player.css'
+import character from './some_pissed_off_little_guy_by_rongs1234.png' // needs Character.js
 
 
 class Player extends React.Component {
@@ -16,7 +17,7 @@ class Player extends React.Component {
 	render() {
 		return (
 			<div id='player'>
-				<img src='https://orig00.deviantart.net/3d23/f/2008/092/6/6/some_pissed_off_little_guy_by_rongs1234.jpg'/>
+				<img src={character}/>
 				<input id='input' type='text' value={this.props.position} onKeyUp={this.handleKeyPress}></input>
 			</div>
 		)

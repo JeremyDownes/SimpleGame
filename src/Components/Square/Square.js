@@ -1,6 +1,8 @@
 import React from 'react'
 import '../../reset.css'
 import './square.css'
+import Coin from './coin.png'
+
 
 class Square extends React.Component {
 	constructor(props) {
@@ -25,9 +27,15 @@ class Square extends React.Component {
 		this.props.handleDrop(e,this.position)
 	}
 
+	getObject() {
+		if (this.props.board.objectBoard[this.position[0]][this.position[1]]) {
+			return <img src={Coin} className="coin"/>
+		} 
+	}
+
 						// below we render a button with a value equal to its index that will be recalled on click. Button will display content at the index of playerBoard
 	render() {
-		this.style = {height: '10vh'};
+
 		let content = this.props.board.playerBoard[this.position[0]][this.position[1]]
 
 
@@ -39,6 +47,7 @@ class Square extends React.Component {
 				style={this.style}
 				id = {this.position}
 			>
+			{this.getObject()}
 		  </div>
 		)
 	}
