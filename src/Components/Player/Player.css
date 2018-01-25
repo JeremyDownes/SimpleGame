@@ -18,3 +18,37 @@ img {
 #player {
 	position: absolute;
 }
+
+.lefting {
+  animation: goLeft 1s linear
+}
+
+.righting {
+  animation: goRight 1s linear
+}
+
+.upping {
+  animation: goUp 1s linear
+}
+
+.downing {
+  animation: goDown 1s linear
+}
+
+@keyframes goRight {
+	0% { position: relative; left: 0rem;}
+	100% { position: relative; left: 3rem; }
+}
+
+@keyframes goLeft {
+	0% { position: relative; right: 0rem;}
+	100% { position: relative; right: 3rem; }
+}
+@keyframes goUp {
+	0% { position: relative; bottom: 0rem;}
+	100% { position: relative; bottom: 3rem; }
+}
+@keyframes goDown {
+	0% { position: relative; top: 0rem;}
+	100% { position: relative; top: 3rem; }
+}
