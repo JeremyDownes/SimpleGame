@@ -4,6 +4,7 @@ import './square.css'
 import Coin from './spinning-coin.gif'
 
 
+
 class Square extends React.Component {
 	constructor(props) {
 		super(props)
@@ -16,11 +17,21 @@ class Square extends React.Component {
 	}
 
 	getObject() {
-		if (this.props.board.objectBoard[this.position[0]][this.position[1]]) {
+		let object = this.props.board.objectBoard[this.position[0]][this.position[1]]
+		if (object) {
 			return <img src={Coin} className="coin"/>
 		} 
 	}
 
+getObstacle() {
+		let obstacle = this.props.board.obstacleBoard[this.position[0]][this.position[1]]
+
+		if (obstacle) {
+			if (obstacle.description) {
+				return <img src={obstacle.description.imgSrc} style={obstacle.description.style}/>
+			}
+		} 
+	}
 	render() {
 
 		let content = this.props.board.playerBoard[this.position[0]][this.position[1]]
@@ -34,6 +45,7 @@ class Square extends React.Component {
 				style={this.style}
 				id = {this.position}
 			>
+			{this.getObstacle()}
 			{this.getObject()}
 		  </div>
 		)
