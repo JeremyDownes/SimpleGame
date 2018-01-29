@@ -1,5 +1,6 @@
-.dragon {
-	position: relative;
-	top:50%;
-	height: 15rem;
+.ads {
+	background-image: url('../../resources/images/ads.jpg');
+	background-size: contain;
+	margin: 0px;
+
 }

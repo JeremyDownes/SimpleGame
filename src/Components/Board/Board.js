@@ -31,7 +31,7 @@ class Board extends React.Component {
 						return row.map(square=> {
 							iColumn++
 							iColumn=iColumn%this.props.board.playerBoard[0].length;
-							return <Square board={this.props.board} position={[iRow,iColumn]} id={iRow+iColumn} handleClick={this.handleClick}/> 
+							return <Square board={this.props.board} position={[iRow,iColumn]} id={iRow+iColumn} handleClick={this.handleClick} scale={this.props.scale} chase={this.props.chase}/> 
 						})
 					})
 				}

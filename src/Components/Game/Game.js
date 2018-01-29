@@ -1,19 +1,28 @@
 import React from 'react'
 import Board from '../Board/Board'
 import Player from '../Player/Player'
+import Menu from '../Menu/Menu'
 import GameLogic from '../../Utils/GameLogic.js'
-import dragon from '../../resources/images/dragon.gif'
+import Obstacles from '../../Utils/Obstacles.js'
 import './game.css'
 
 class Game extends React.Component {
 	constructor(props) {
 		super(props)
-		this.state = {game: new GameLogic(21,21,[{location: [3,2], description: {type:'dragon',imgSrc: '../../resources/images/dragon.gif', style:{height: '9rem'} }},{location: [10,0]},{location: [10,1]},{location: [11,2]},{location: [12,3]},{location: [12,4]},{location: [13,5]},{location: [13,6]},{location: [14,9]},{location: [11,5]},{location: [10,6]},{location: [9,6]},{location: [8,7]},{location: [8,8]},{location: [9,9]},{location: [10,10]},{location: [11,11]},{location: [12,10]},{location: [13,9]},{location: [14,9]},{location: [15,10]},{location: [15,11]},{location: [16,12]},{location: [16,13]},{location: [17,14]},{location: [17,15]},{location: [17,16]},{location: [11,8]},{location: [12,6]},{location: [17,17]},{location: [18,18]},{location: [18,19]},{location: [19,20]},{location: [12,9]}],
+		this.state = {game: new GameLogic(21,21,Obstacles,
 				[	{location: [19,13], imgSrc: './coin.png', type: 'coin', interact: {coin: 1, remove: true}},	{location: [17, 8], imgSrc: './coin.png', type: 'coin', interact: {coin: 1, remove: true}}])
-		, player: { position: [19,1],name: 'W. Wolff', type: 'human', level: 1, health: 100, magic: 50, equipped: [], experience: {points:0, experiences: []}, coin: 0, stats: [], inventory: []} }	// import from db
+		, player: { position: [19,1],name: 'W. Wolff', type: 'human', level: 1, health: 100, magic: 50, equipped: [], experience: {points:0, experiences: []}, coin: 0, stats: [], inventory: []}
+		, obstacles: [], objects: [], playerMoving: null
+		 }	// import from db
 		this.playMove = this.playMove.bind(this)
+		this.movePlayer = this.movePlayer.bind(this)
 		this.neighborOffsets = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]]
 		this.move = this.move.bind(this)
+		this.chase = this.chase.bind(this)
+		this.direction = [0,-1]
+		this.destination = this.state.player.position
+		this.scale = window.innerHeight <= window.innerWidth ? window.innerHeight / 21 : window.innerWidth / 21
+		this.remainder = window.innerHeight <= window.innerWidth ? window.innerWidth - window.innerHeight : window.innerHeight - window.innerWidth
 		this.points = 0;
 	}
 
@@ -33,11 +42,75 @@ class Game extends React.Component {
 		})
 	}
 
+	caught() {
+		let player = this.state.player
+		player.health -= 5
+		this.setState({player: player})
+	}
+
+	chase(position) {
+		let candidate = [position[0] + this.direction[0],position[1]+this.direction[1]]
+		if (candidate[0] === this.state.player.position[0] && candidate[1] === this.state.player.position[1]) {this.caught()}
+		
+		if (candidate[0] >= 0 && candidate[0] < 21 && candidate[1] >= 0 && candidate[1] < 21) {
+
+			if (this.state.game.obstacleBoard[candidate[0]][candidate[1]]) {
+				let directions = [[1,0],[0,1],[-1,0],[0,-1]]
+				this.direction= directions[Math.floor(Math.random()*4)]
+			} else {
+				let game = this.state.game
+				game.obstacleBoard[candidate[0]][candidate[1]] = game.obstacleBoard[position[0]][position[1]]
+				game.obstacleBoard[position[0]][position[1]] = null
+				this.setState({game:game})
+			}
+		} else {
+				let directions = [[1,0],[0,1],[-1,0],[0,-1]]
+				this.direction= directions[Math.floor(Math.random()*4)]
+		}
+	}
+
+	movePlayer() {
+		let x = null
+		let y = null
+		let keyCode = null
+		this.destination[0] > this.state.player.position[0] ? x=true : x=false
+		this.destination[1] > this.state.player.position[1] ? y=true : y=false
+		if (x&&y) {
+			(this.destination[0] - this.state.player.position[0]) >= (this.destination[1] - this.state.player.position[1]) ? keyCode=40 : keyCode=39
+		}
+		if (!x&&!y) {
+			(this.state.player.position[0] - this.destination[0]) >= (this.state.player.position[1] - this.destination[1]) ? keyCode=38 : keyCode=37 
+		}
+		if (x&&!y) {
+			(this.destination[0] - this.state.player.position[0]) >= (this.state.player.position[1] - this.destination[1]) ? keyCode=40 : keyCode=37 
+		}
+		if (!x&&y) {
+			(this.state.player.position[0] - this.destination[0]) >= (this.destination[1] - this.state.player.position[1]) ? keyCode=38 : keyCode=39 
+		}
+		
+
+		if (this.destination[0] !== this.state.player.position[0] || this.destination[1] !== this.state.player.position[1] ){
+			if (!this.state.playerMoving) {
+				this.state.playerMoving = setInterval(function() {this.movePlayer()}.bind(this) ,200)
+			}
+			this.move(keyCode)
+		} 
+	}
+
 	playMove(x,y) {
-		alert(x+","+y)
+		this.destination = [x,y]
+		this.movePlayer()
 	}
 
 	move(keyCode) {
+		if (this.destination[0] === this.state.player.position[0] && this.destination[1] === this.state.player.position[1] ) {
+			let interval = this.state.playerMoving
+			this.setState({playerMoving: null})
+			clearInterval(interval)
+			alert(this.destination)
+			return
+		}
+
 			let nextPosition = []
 			let player = this.state.player
 			let animation = false
@@ -69,6 +142,7 @@ class Game extends React.Component {
 					}
 					break; 
 			}
+
 		if (this.state.game.canPlayerEnter(nextPosition)) {
 			if (this.state.game.objectBoard[nextPosition[0]][nextPosition[1]]) {
 				player = this.state.game.objectInteract(nextPosition,player)
@@ -76,28 +150,33 @@ class Game extends React.Component {
 
 			player.position = nextPosition
 			this.setState({player: player})	
-			setTimeout(function () {
+			
 				document.getElementById(`${nextPosition[0]},${nextPosition[1]}`).appendChild(document.getElementById('player'))
 				document.getElementById('input').focus()
-			},1000) 
+		
 			return animation
+		} else { 
+			let codes = [37,38,39,40]
+			this.move(codes[Math.floor(Math.random()*4)])
 		}
+
 	} 
+
+
 
   componentDidMount() {
 		document.getElementById(this.state.player.position[0]+','+this.state.player.position[1]).appendChild(document.getElementById('player'))	
-	  document.getElementById('input').focus() 
 	}
 
 	render() {
-		if (document.getElementById('input')) { document.getElementById('input').focus() }
+			let direction = window.innerHeight <= window.innerWidth ? 'row' : 'column'
+			let sideBarSize = direction === 'row' ? {width: this.remainder/2+'px'} : {height: this.remainder/2+'px'}  
 		return (
-			<div style={{display: 'flex'}}>			
-			<img src={require('../../resources/images/dragon.gif')} className='dragon'/>
-			<p style={{fontSize: "5rem"}}>Ads</p>
+			<div style={{display: 'flex', flexDirection: direction}}>	
+				<div className = 'ads' style={sideBarSize} ></div>	
 				<Player position = {this.state.playerPosition} move={this.move} change={this.state.playerChange}/>
-				<Board handleClick={this.playMove} board={this.state.game} startGame={this.startGame} />
-				<p style={{fontSize: "5rem", color: 'black'}}>Coins {this.state.player.coin}</p>
+				<Board handleClick={this.playMove} board={this.state.game} startGame={this.startGame} scale={this.scale} chase={this.chase}/>
+				<Menu coin={this.state.player.coin} health={this.state.player.health} style={sideBarSize}/>
 			</div>
 		)
 	}

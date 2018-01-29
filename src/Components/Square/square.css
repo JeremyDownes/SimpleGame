@@ -1,16 +1,15 @@
 .square {
+
+
 	display: flex;
 	justify-content: center;
 	align-items: center;
   box-sizing: border-box;
-	border: 1px solid black;
 	background-color: transparent;
 	border-radius: 0px;
 	overflow: visible;
 	padding: 0;
 	margin: 0;
-	max-height: 4.7619vh;
-	max-width: 4.7619vh;
 }
 
 .coin {

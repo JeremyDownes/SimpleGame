@@ -60,7 +60,6 @@ export class GameLogic {
 			let y = obstacle.location[1]
 			board[x][y] = obstacle
 		})
-		console.log(board)
 	  return board
 	}	
 
@@ -70,7 +69,6 @@ export class GameLogic {
 			let y = object.location[1]
 			board[x][y] = object
 		})
-		console.log(board)
 	  return board
 	}	
 }

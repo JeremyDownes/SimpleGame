@@ -1,8 +1,5 @@
 .App {
 	display: flex;
-	justify-content: center;
 	overflow: hidden;
-  text-align: center;
-  max-height: 100vw;
 }
 

@@ -1,10 +1,6 @@
 .board {
 	display: grid;
-	width: 100vw;
-	max-width: 100vh;
-	height:100vh;
-  max-height: 100vw;
-	background-image: url('../../resources/images/beginning-ending-background.jpg');
-	background-size: cover;
+	background-image: url('../../resources/images/cobblestone.jpg');
+	background-size: 10%;
 
 }
