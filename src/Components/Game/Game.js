@@ -4,13 +4,13 @@ import Player from '../Player/Player'
 import Menu from '../Menu/Menu'
 import GameLogic from '../../Utils/GameLogic.js'
 import Obstacles from '../../Utils/Obstacles.js'
+import Objects from '../../Utils/Objects.js'
 import './game.css'
 
 class Game extends React.Component {
 	constructor(props) {
 		super(props)
-		this.state = {game: new GameLogic(21,21,Obstacles,
-				[	{location: [19,13], imgSrc: './coin.png', type: 'coin', interact: {coin: 1, remove: true}},	{location: [17, 8], imgSrc: './coin.png', type: 'coin', interact: {coin: 1, remove: true}}])
+		this.state = {game: new GameLogic(21,21,Obstacles,Objects)
 		, player: { position: [19,1],name: 'W. Wolff', type: 'human', level: 1, health: 100, magic: 50, equipped: [], experience: {points:0, experiences: []}, coin: 0, stats: [], inventory: []}
 		, obstacles: [], objects: [], playerMoving: null
 		 }	// import from db
@@ -72,34 +72,37 @@ class Game extends React.Component {
 	movePlayer() {
 		let x = null
 		let y = null
-		let keyCode = null
+		let keyCode = []
 		this.destination[0] > this.state.player.position[0] ? x=true : x=false
 		this.destination[1] > this.state.player.position[1] ? y=true : y=false
 		if (x&&y) {
-			(this.destination[0] - this.state.player.position[0]) >= (this.destination[1] - this.state.player.position[1]) ? keyCode=40 : keyCode=39
+			(this.destination[0] - this.state.player.position[0]) >= (this.destination[1] - this.state.player.position[1]) ? keyCode=[40,39]  : keyCode = [39,40]
 		}
 		if (!x&&!y) {
-			(this.state.player.position[0] - this.destination[0]) >= (this.state.player.position[1] - this.destination[1]) ? keyCode=38 : keyCode=37 
+			(this.state.player.position[0] - this.destination[0]) >= (this.state.player.position[1] - this.destination[1]) ? keyCode=[38,37] : keyCode=[37,38]
 		}
 		if (x&&!y) {
-			(this.destination[0] - this.state.player.position[0]) >= (this.state.player.position[1] - this.destination[1]) ? keyCode=40 : keyCode=37 
+			(this.destination[0] - this.state.player.position[0]) >= (this.state.player.position[1] - this.destination[1]) ? keyCode=[40,37] : keyCode=[37,40] 
 		}
 		if (!x&&y) {
-			(this.state.player.position[0] - this.destination[0]) >= (this.destination[1] - this.state.player.position[1]) ? keyCode=38 : keyCode=39 
+			(this.state.player.position[0] - this.destination[0]) >= (this.destination[1] - this.state.player.position[1]) ? keyCode=[38,39] : keyCode=[39,38] 
 		}
 		
 
 		if (this.destination[0] !== this.state.player.position[0] || this.destination[1] !== this.state.player.position[1] ){
 			if (!this.state.playerMoving) {
-				this.state.playerMoving = setInterval(function() {this.movePlayer()}.bind(this) ,200)
+				this.state.playerMoving = setInterval(function() {this.movePlayer()}.bind(this) ,300)
 			}
 			this.move(keyCode)
 		} 
 	}
 
 	playMove(x,y) {
-		this.destination = [x,y]
-		this.movePlayer()
+		if(this.state.game.obstacleBoard[x][y]===null) {
+			this.destination = [x,y]
+			this.movePlayer()
+		}
+		else {this.obstacleInteract}
 	}
 
 	move(keyCode) {
@@ -107,59 +110,43 @@ class Game extends React.Component {
 			let interval = this.state.playerMoving
 			this.setState({playerMoving: null})
 			clearInterval(interval)
-			alert(this.destination)
 			return
 		}
 
-			let nextPosition = []
-			let player = this.state.player
-			let animation = false
-			nextPosition[0] = this.state.player.position[0]
-			nextPosition[1] = this.state.player.position[1]
-			switch(keyCode) {
-				case 39: 
-					if(document.getElementById(`${this.state.player.position[0]},${this.state.player.position[1]+1}`)) {
-						nextPosition[1]++
-						animation = 'righting'
-					}
-					break; 
-				case 37: 
-					if (document.getElementById(`${this.state.player.position[0]},${this.state.player.position[1]-1}`)) {
-						nextPosition[1]--
-						animation = 'lefting'
-					}
-					break; 
-				case 38: 
-					if (document.getElementById(`${this.state.player.position[0]-1},${this.state.player.position[1]}`)) {
-						nextPosition[0]--
-						animation = 'upping'
-					}
-					break; 
-				case 40: 
-					if (document.getElementById(`${this.state.player.position[0]+1},${this.state.player.position[1]}`)) {
-						nextPosition[0]++
-						animation = 'downing'
-					}
-					break; 
-			}
+		let nextPosition = []
+		let player = this.state.player
+		nextPosition[0] = this.state.player.position[0]
+		nextPosition[1] = this.state.player.position[1]
 
+		nextPosition = this.state.game.doesPositionExist(keyCode[0],nextPosition)
 		if (this.state.game.canPlayerEnter(nextPosition)) {
 			if (this.state.game.objectBoard[nextPosition[0]][nextPosition[1]]) {
 				player = this.state.game.objectInteract(nextPosition,player)
 			}
-
 			player.position = nextPosition
 			this.setState({player: player})	
-			
 				document.getElementById(`${nextPosition[0]},${nextPosition[1]}`).appendChild(document.getElementById('player'))
-				document.getElementById('input').focus()
-		
-			return animation
-		} else { 
-			let codes = [37,38,39,40]
-			this.move(codes[Math.floor(Math.random()*4)])
-		}
+			return true // animation
+		} else {
+					nextPosition[0] = this.state.player.position[0]
+			nextPosition[1] = this.state.player.position[1]
+			nextPosition = this.state.game.doesPositionExist(keyCode[1],nextPosition)
 
+			
+			if (this.state.game.canPlayerEnter(nextPosition)) {
+
+				if (this.state.game.objectBoard[nextPosition[0]][nextPosition[1]]) {
+					player = this.state.game.objectInteract(nextPosition,player)
+				}
+				player.position = nextPosition
+				this.setState({player: player})	
+					document.getElementById(`${nextPosition[0]},${nextPosition[1]}`).appendChild(document.getElementById('player'))
+				return true // animation
+			}	else { 
+				let codes = [37,38,39,40]
+				//this.move([codes[Math.floor(Math.random()*4)],codes[Math.floor(Math.random()*4)]])
+			} 
+		}
 	} 
 
 
@@ -174,9 +161,9 @@ class Game extends React.Component {
 		return (
 			<div style={{display: 'flex', flexDirection: direction}}>	
 				<div className = 'ads' style={sideBarSize} ></div>	
-				<Player position = {this.state.playerPosition} move={this.move} change={this.state.playerChange}/>
+				<Player position = {this.state.playerPosition} move={this.move} change={this.state.playerChange} scale = {this.scale}/>
 				<Board handleClick={this.playMove} board={this.state.game} startGame={this.startGame} scale={this.scale} chase={this.chase}/>
-				<Menu coin={this.state.player.coin} health={this.state.player.health} style={sideBarSize}/>
+				<Menu coin={this.state.player.coin} health={this.state.player.health} style={sideBarSize} direction={direction} size={this.remainder/2}/>
 			</div>
 		)
 	}

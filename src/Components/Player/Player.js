@@ -16,7 +16,7 @@ class Player extends React.Component {
 	render() {
 		return (
 			<div id='player' className={this.class}>
-				<img src={this.state.animation[this.state.currentAnimation]}/>
+				<img src={this.state.animation[this.state.currentAnimation]} style={{height: this.props.scale*1.25+'px'}}/>
 				<div id='input' type='text' value={this.props.position}></div>
 			</div>
 		)

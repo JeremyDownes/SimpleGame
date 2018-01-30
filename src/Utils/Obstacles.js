@@ -1,5 +1,7 @@
 export const obstacles = [
-{location: [0,20 ], description: {type:'monster', style:{height: '4vw', top: '1%'},imgSrc: require('../resources/images/spiderbot.gif')}},
+{location: [0,20 ], description: {type:'monster', style:{height: '1em', top: '1%'},imgSrc: require('../resources/images/spiderbot.gif')}},
+
+{location: [0, 0 ], description: {type:'monster', style:{height: '1em', top: '1%'},imgSrc: require('../resources/images/spiderbot.gif')}},
 
 {location: [18,0 ], description: {type:'wall', style:{backgroundColor: 'lightgray', border: '.5vw inset '},}},
 

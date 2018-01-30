@@ -32,6 +32,38 @@ export class GameLogic {
 		return player
 	}
 
+	obstacleInteract() {
+
+	}
+
+	doesPositionExist(keyCode,nextPosition) {
+
+			switch(keyCode) {
+				case 39: 
+					if(document.getElementById(`${nextPosition[0]},${nextPosition[1]+1}`)) {
+						nextPosition[1]++
+					}
+					break; 
+				case 37: 
+					if (document.getElementById(`${nextPosition[0]},${nextPosition[1]-1}`)) {
+						nextPosition[1]--
+					}
+					break; 
+				case 38: 
+					if (document.getElementById(`${nextPosition[0]-1},${nextPosition[1]}`)) {
+						nextPosition[0]--
+					}
+					break; 
+				case 40: 
+					if (document.getElementById(`${nextPosition[0]+1},${nextPosition[1]}`)) {
+						nextPosition[0]++
+					}
+					break; 
+			}
+			return nextPosition
+			nextPosition = null
+	}
+
 	canPlayerEnter(position) {
 		let x = position[0]
 		let y = position[1]

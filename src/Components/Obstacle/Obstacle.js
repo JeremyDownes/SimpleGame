@@ -4,12 +4,12 @@ class Obstacle extends React.Component {
 
 	constructor(props) {
 		super(props)
-		this.interval = setInterval(this.chase.bind(this),100)
+		this.interval = setInterval(this.chase.bind(this),Math.random()*300)
 
 	}
 
 	chase() {
-		this.props.chase(this.props.position)
+		setTimeout(this.props.chase(this.props.position),Math.random()*300)
 	}
 
 	componentWillUnmount() {
