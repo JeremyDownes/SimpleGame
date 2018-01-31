@@ -25,6 +25,12 @@ export class GameLogic {
 		let key =Object.keys(interact)[0]
 		if(typeof(obj.interact[key])==='number') {
 			player[key] += obj.interact[key]
+		} 
+		if(Object.keys(interact)[0]==='function') {
+			if(obj.interact.function==='nextLevel') {
+				alert('You Win')
+				document.location.reload()
+			}
 		}
 		if(obj.interact.remove) {
 			this.objectBoard[objXY[0]][objXY[1]] = null

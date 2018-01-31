@@ -22,7 +22,7 @@ class Square extends React.Component {
 	getObject() {
 		let object = this.props.board.objectBoard[this.position[0]][this.position[1]]
 		if (object) {
-			return <img src={Coin} className="coin"/>
+			return <img src={object.imgSrc} className="coin"/>
 		} 
 	}
 

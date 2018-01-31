@@ -46,6 +46,12 @@ class Game extends React.Component {
 		let player = this.state.player
 		player.health -= 5
 		this.setState({player: player})
+		let alive = true 
+		if (this.state.player.health<=0) {
+			if (alive){alert('You Died')}
+				alive=false
+			document.location.reload()
+		}
 	}
 
 	chase(position) {
@@ -112,7 +118,10 @@ class Game extends React.Component {
 			clearInterval(interval)
 			return
 		}
-
+if (this.state.player.coin === 15) {
+			let thisState = this.state
+			thisState.game.objectBoard[0][0] = 	{location: [0,0], imgSrc: require('../../resources/images/objects/exit.jpg'), type: 'exit', interact: {function: 'nextLevel', remove: true}}
+		}
 		let nextPosition = []
 		let player = this.state.player
 		nextPosition[0] = this.state.player.position[0]
