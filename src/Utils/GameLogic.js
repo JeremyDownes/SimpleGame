@@ -19,28 +19,6 @@ export class GameLogic {
 		return this._objectBoard
 	}	
 
-	objectInteract(objXY,player) {
-		let obj = this.objectBoard[objXY[0]][objXY[1]]
-		let interact = obj.interact
-		let key =Object.keys(interact)[0]
-		if(typeof(obj.interact[key])==='number') {
-			player[key] += obj.interact[key]
-		} 
-		if(Object.keys(interact)[0]==='function') {
-			if(obj.interact.function==='nextLevel') {
-				alert('You Win')
-				document.location.reload()
-			}
-		}
-		if(obj.interact.remove) {
-			this.objectBoard[objXY[0]][objXY[1]] = null
-		}
-		return player
-	}
-
-	obstacleInteract() {
-
-	}
 
 	doesPositionExist(keyCode,nextPosition) {
 

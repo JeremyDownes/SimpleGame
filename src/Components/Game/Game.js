@@ -11,7 +11,7 @@ class Game extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {game: new GameLogic(21,21,Obstacles,Objects)
-		, player: { position: [19,1],name: 'W. Wolff', type: 'human', level: 1, health: 100, magic: 50, equipped: [], experience: {points:0, experiences: []}, coin: 0, stats: [], inventory: []}
+		, player: { position: [19,1],name: 'W. Wolff', attributes: {type: 'human', level: 1, health: 100, magic: 50,  strength: 9, attributes: []}, experience: {points:0, experiences: []}, inventory: {equipped: {sword: 1}, coin: 0 }}
 		, obstacles: [], objects: [], playerMoving: null
 		 }	// import from db
 		this.playMove = this.playMove.bind(this)
@@ -44,10 +44,10 @@ class Game extends React.Component {
 
 	caught() {
 		let player = this.state.player
-		player.health -= 5
+		player.attributes.health -= 5
 		this.setState({player: player})
 		let alive = true 
-		if (this.state.player.health<=0) {
+		if (this.state.player.attributes.health<=0) {
 			if (alive){alert('You Died')}
 				alive=false
 			document.location.reload()
@@ -75,7 +75,7 @@ class Game extends React.Component {
 		}
 	}
 
-	movePlayer() {
+	movePlayer() {   // this is still set up for arrow keycodes... refactor?
 		let x = null
 		let y = null
 		let keyCode = []
@@ -108,54 +108,100 @@ class Game extends React.Component {
 			this.destination = [x,y]
 			this.movePlayer()
 		}
-		else {this.obstacleInteract}
+		else {this.obstacleInteract(x,y)}
 	}
 
-	move(keyCode) {
+	combat(x,y)
+		{
+			let obstacle = this.state.game.obstacleBoard[x][y]
+			let moves = obstacle.description.interact.combat
+			let playerAttack = Math.floor(Math.random()*(this.state.player.attributes.strength * this.state.player.inventory.equipped.sword))
+			let opponentAttack = Math.floor(Math.random()*(moves[Math.floor(Math.random()*moves.length)]))
+			let player = this.state.player
+			let game = this.state.game
+			player.attributes.health -= opponentAttack 
+			obstacle.description.interact.hp -= playerAttack
+			game.obstacleBoard[x][y] = obstacle
+			this.setState({player: player, game: game})
+		}
+
+	obstacleInteract(x,y) {
+		let obstacle = this.state.game.obstacleBoard[x][y] 
+		if(obstacle.description.interact) {
+			if(obstacle.description.interact.remove) {
+				if(obstacle.description.interact.combat) {
+				// this.combat returns x,y 
+				} else {
+				// this.qualify	returns require object  
+				}
+			} else {
+				if(obstacle.description.interact.speak) {
+				// this.speak passes conversation object
+				}
+				if(obstacle.description.interact.attribute) {
+				// this.attribute returns attribute object
+				}
+			}
+		}
+	}
+
+	objectInteract (position)
+	{
+		let player= this.state.player
+		let game = this.state.game
+		if(this.state.game.objectBoard[position[0]][position[1]].interact.coin) {
+			player.inventory.coin += this.state.game.objectBoard[position[0]][position[1]].interact.coin
+		} 
+		if(this.state.game.objectBoard[position[0]][position[1]].interact.remove) {
+			game.objectBoard[position[0]][position[1]] = null
+		}			
+		this.setState({player: player, game : game })
+	}
+
+	move(keyCode) { // also still using key codes
+
 		if (this.destination[0] === this.state.player.position[0] && this.destination[1] === this.state.player.position[1] ) {
 			let interval = this.state.playerMoving
 			this.setState({playerMoving: null})
 			clearInterval(interval)
 			return
 		}
-if (this.state.player.coin === 15) {
+
+		if (this.state.player.inventory.coin === 15) {
 			let thisState = this.state
 			thisState.game.objectBoard[0][0] = 	{location: [0,0], imgSrc: require('../../resources/images/objects/exit.jpg'), type: 'exit', interact: {function: 'nextLevel', remove: true}}
 		}
+
 		let nextPosition = []
 		let player = this.state.player
 		nextPosition[0] = this.state.player.position[0]
 		nextPosition[1] = this.state.player.position[1]
-
 		nextPosition = this.state.game.doesPositionExist(keyCode[0],nextPosition)
+
 		if (this.state.game.canPlayerEnter(nextPosition)) {
 			if (this.state.game.objectBoard[nextPosition[0]][nextPosition[1]]) {
-				player = this.state.game.objectInteract(nextPosition,player)
+				this.objectInteract(nextPosition)
 			}
 			player.position = nextPosition
 			this.setState({player: player})	
 				document.getElementById(`${nextPosition[0]},${nextPosition[1]}`).appendChild(document.getElementById('player'))
 			return true // animation
 		} else {
-					nextPosition[0] = this.state.player.position[0]
+			nextPosition[0] = this.state.player.position[0]
 			nextPosition[1] = this.state.player.position[1]
 			nextPosition = this.state.game.doesPositionExist(keyCode[1],nextPosition)
 
-			
-			if (this.state.game.canPlayerEnter(nextPosition)) {
+			if (this.state.game.canPlayerEnter(nextPosition))
 
 				if (this.state.game.objectBoard[nextPosition[0]][nextPosition[1]]) {
-					player = this.state.game.objectInteract(nextPosition,player)
+					player = this.objectInteract(nextPosition)
 				}
 				player.position = nextPosition
 				this.setState({player: player})	
 					document.getElementById(`${nextPosition[0]},${nextPosition[1]}`).appendChild(document.getElementById('player'))
 				return true // animation
-			}	else { 
-				let codes = [37,38,39,40]
-				//this.move([codes[Math.floor(Math.random()*4)],codes[Math.floor(Math.random()*4)]])
-			} 
-		}
+			}	
+		
 	} 
 
 
@@ -172,7 +218,7 @@ if (this.state.player.coin === 15) {
 				<div className = 'ads' style={sideBarSize} ></div>	
 				<Player position = {this.state.playerPosition} move={this.move} change={this.state.playerChange} scale = {this.scale}/>
 				<Board handleClick={this.playMove} board={this.state.game} startGame={this.startGame} scale={this.scale} chase={this.chase}/>
-				<Menu coin={this.state.player.coin} health={this.state.player.health} style={sideBarSize} direction={direction} size={this.remainder/2}/>
+				<Menu coin={this.state.player.inventory.coin} health={this.state.player.attributes.health} style={sideBarSize} direction={direction} size={this.remainder/2}/>
 			</div>
 		)
 	}
