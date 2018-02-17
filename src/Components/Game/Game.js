@@ -11,7 +11,7 @@ class Game extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {game: new GameLogic(21,21,Obstacles,Objects)
-		, player: { position: [19,1],name: 'W. Wolff', attributes: {type: 'human', level: 1, health: 100, magic: 50,  strength: 9, attributes: []}, experience: {points:0, experiences: []}, inventory: {equipped: {sword: 1}, coin: 0, inventory: []}}
+		, player: { position: [19,1],name: 'W. Wolff', attributes: {type: 'Human Warrior', level: 1, health: 100, magic: 50,  strength: 9, intelligence: 10, endurance: 8, wisdom: 9, speed: 5, tenacity: 7, adaptability: 9, attributes: []}, experience: {points:0, experiences: []}, inventory: {equipped: {sword: 1}, coin: 0, inventory: []}}
 		, obstacles: [], objects: [], playerMoving: null
 		 }	// import from db
 		this.playMove = this.playMove.bind(this)
@@ -137,7 +137,6 @@ class Game extends React.Component {
 		let player =  this.state.player
 		let needs = this.state.game.obstacleBoard[x][y].interact.remove
 
-		alert(needs)
 		player.inventory.inventory.forEach(item => { 
 			if(item.description.type === needs) {
 				game.obstacleBoard[x][y] = null
@@ -149,8 +148,32 @@ class Game extends React.Component {
 		this.setState({game: game, player: player})
 	}	
 
-	attribute(x,y) {
+	experience(x,y) {
+		let player = this.state.player
+		let experience = this.state.game.obstacleBoard[x][y].interact.experience
+		if (!player.experience.experiences.includes(experience)) {
+			player.experience.experiences.push(experience)
+		 }
+		this.setState({player: player})
+	}
 
+	attribute(x,y) {
+		let player = this.state.player
+		let attribute = this.state.game.obstacleBoard[x][y].interact.attribute
+		if (Object.getOwnPropertyNames(player.attributes).includes(attribute)) {
+			// this.influenceAttribute	
+		} else {
+			if(!player.attributes.attributes.includes(attribute)) {
+				player.attributes.attributes.push(attribute)
+				setTimeout(()=> {
+					let removeAttr = this.state.player
+					removeAttr.attributes.attributes.splice(removeAttr.attributes.attributes.indexOf(attribute),1)
+					this.setState({player: removeAttr})
+				},attribute[Object.keys(attribute)[0]]*1000)
+			}
+		}
+		this.setState({player: player})
+		
 	}
 
 	obstacleInteract(x,y) {
@@ -166,8 +189,11 @@ class Game extends React.Component {
 				if(obstacle.interact.speak) {
 				// this.speak passes conversation object
 				}
+				if(obstacle.interact.experience) {
+					this.experience(x,y)
+				}
 				if(obstacle.interact.attribute) {
-				// this.attribute returns attribute object
+				  this.attribute(x,y)
 				}
 			}
 		}

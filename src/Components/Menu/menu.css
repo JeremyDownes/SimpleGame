@@ -22,9 +22,18 @@
 	width: 85%;
 }
 
-.expand * {
+.expand img {
 	width: 20%;
 	display: initial;
+}
+
+.Attributes .expand ul {
+	width: 400%;
+	display: flex;
+}
+.Attributes .expand li {
+	display: block;
+	width: 100%;
 }
 
 ::-webkit-scrollbar {

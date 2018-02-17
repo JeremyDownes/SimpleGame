@@ -69,7 +69,20 @@ class Menu extends React.Component {
 					<div className= 'Attributes' style= {style} onClick={this.expand.bind(this,'Attributes')}>
 						<span class="fa  fa-caret-up">  Attributes</span>
 						<div className = {this.expandAttributes}>
-							{this.props.player.inventory.inventory.map(item=> <img className= 'item' src={item.description.imgSrc}/>)}
+							<ul style={{display: 'block', width: '200%'}}>
+								<li>Class: {this.props.player.attributes.type}</li>
+								<li>Level: {this.props.player.attributes.level}</li>
+								<li>Strength: {this.props.player.attributes.strength}</li>
+								<li>Intelligence: {this.props.player.attributes.intelligence}</li>
+								<li>Endurance: {this.props.player.attributes.endurance}</li>
+								<li>Wisdom: {this.props.player.attributes.wisdom}</li>
+								<li>Speed: {this.props.player.attributes.speed}</li>
+								<li>Tenacity: {this.props.player.attributes.tenacity}</li>
+								<li>Adaptability: {this.props.player.attributes.adaptability}</li>
+								{this.props.player.attributes.attributes.map(attribute=> <li> {Object.keys(attribute)}</li>)}
+								
+								
+							</ul>	
 						</div>
 					</div>
 
@@ -78,7 +91,7 @@ class Menu extends React.Component {
 						<div className = {this.expandExperience}>
 							<ul>
 								<li>Points: {this.props.player.experience.points}</li>
-								{this.props.player.experience.experiences.map(item=> <li>item</li>)}
+								{this.props.player.experience.experiences.map(item=> <li style={{display: 'block', width: '100%'}}>{item}</li>)}
 							</ul>
 						</div>
 					</div>					

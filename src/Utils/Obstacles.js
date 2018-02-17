@@ -241,11 +241,11 @@ export const obstacles = [
 
 { location: [3,15], description: {type:'fire', imgSrc: require('../resources/images/obstacles/fire.gif')}, interact: {"attribute":{"health":{"burn":-10}},"remove":"water"}},
 
-{ location: [20,20], description: {type:'water', imgSrc: require('../resources/images/obstacles/water.png')}, interact: {"attribute":{"wet":30},"remove":false}},
+{ location: [20,20], description: {type:'water', imgSrc: require('../resources/images/obstacles/water.png')}, interact: {"attribute":{"wet":40},"remove":false}},
 
 { location: [11,8], description: {type:'ridingHood', imgSrc: require('../resources/images/obstacles/riding-hood.gif')}, interact: {"combat":[{"claw":15},{"bite":30}],"remove":20}},
 
-{ location: [0,15], description: {type:'block', imgSrc: require('../resources/images/obstacles/block.jpg')}, interact: {"attribute":{"experience":"Touched the weird block"},"remove":false}},
+{ location: [0,15], description: {type:'block', imgSrc: require('../resources/images/obstacles/block.jpg')}, interact: {experience:"Touched the weird block","remove":false}},
 
 { location: [2,19], description: {type:'dragon', imgSrc: require('../resources/images/obstacles/dragon.gif')}, interact: {"combat":[{"bite":40},{"crush":50},{"burn":60}],"remove":80}},
 ]
