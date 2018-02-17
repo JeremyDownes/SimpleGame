@@ -12,6 +12,15 @@
 #eqp1, #eqp2 {
 	border: 1px solid black;
 	background-color: white;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+
+#eqp1 img, #eqp2 img {
+	margin-top: 100%
+
 }
 
 .collapse *{

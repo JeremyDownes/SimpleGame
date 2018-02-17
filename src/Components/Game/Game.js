@@ -11,11 +11,12 @@ class Game extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {game: new GameLogic(21,21,Obstacles,Objects)
-		, player: { position: [19,1],name: 'W. Wolff', attributes: {type: 'Human Warrior', level: 1, health: 100, magic: 50,  strength: 9, intelligence: 10, endurance: 8, wisdom: 9, speed: 5, tenacity: 7, adaptability: 9, attributes: []}, experience: {points:0, experiences: []}, inventory: {equipped: {sword: 1}, coin: 0, inventory: []}}
+		, player: { position: [19,1],name: 'W. Wolff', attributes: {type: 'Human Warrior', level: 1, health: 100, magic: 50,  strength: 9, intelligence: 10, endurance: 8, wisdom: 9, speed: 5, tenacity: 7, adaptability: 9, attributes: []}, experience: {points:0, experiences: []}, inventory: {equipped: [], coin: 0, inventory: []}}
 		, obstacles: [], objects: [], playerMoving: null
 		 }	// import from db
 		this.playMove = this.playMove.bind(this)
 		this.movePlayer = this.movePlayer.bind(this)
+		this.equip = this.equip.bind(this)
 		this.neighborOffsets = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]]
 		this.move = this.move.bind(this)
 		this.chase = this.chase.bind(this)
@@ -73,6 +74,16 @@ class Game extends React.Component {
 				let directions = [[1,0],[0,1],[-1,0],[0,-1]]
 				this.direction= directions[Math.floor(Math.random()*4)]
 		}
+	}
+
+	equip(item) {	
+		let player = this.state.player
+		player.inventory.inventory.splice(player.inventory.inventory.indexOf(item),1)
+		player.inventory.equipped.unshift(item)
+		if (player.inventory.equipped.length > 2) {
+			player.inventory.inventory.push(player.inventory.equipped.pop())
+		}
+		this.setState({player: player})
 	}
 
 	movePlayer() {   // this is still set up for arrow keycodes... refactor?
@@ -137,14 +148,18 @@ class Game extends React.Component {
 		let player =  this.state.player
 		let needs = this.state.game.obstacleBoard[x][y].interact.remove
 
-		player.inventory.inventory.forEach(item => { 
-			if(item.description.type === needs) {
+		if(player.inventory.equipped[0].description.type === needs) { 
 				game.obstacleBoard[x][y] = null
-				player.inventory.inventory.splice(player.inventory.inventory.indexOf(needs),1)
+				player.inventory.equipped.splice(0,1)
 				player.experience.points += 5
-				return
+			} else {
+				if(player.inventory.equipped[1].description.type === needs) { 
+					game.obstacleBoard[x][y] = null
+					player.inventory.equipped.splice(1,1)
+					player.experience.points += 5
+				}	
 			}
-		})
+
 		this.setState({game: game, player: player})
 	}	
 
@@ -274,7 +289,7 @@ class Game extends React.Component {
 				<div className = 'ads' style={sideBarSize} ></div>	
 				<Player position = {this.state.playerPosition} move={this.move} change={this.state.playerChange} scale = {this.scale}/>
 				<Board handleClick={this.playMove} board={this.state.game} startGame={this.startGame} scale={this.scale} chase={this.chase}/>
-				<Menu player={this.state.player} style={sideBarSize} direction={direction} size={this.remainder/2}/>
+				<Menu player={this.state.player} style={sideBarSize} direction={direction} size={this.remainder/2} equip={this.equip}/>
 			</div>
 		)
 	}

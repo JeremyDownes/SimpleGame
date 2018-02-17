@@ -9,6 +9,7 @@ class Menu extends React.Component {
 		this.expandInventory = 'collapse'
 		this.expandAttributes = 'collapse'
 		this.expandExperience = 'collapse'
+		this.getEquipped = this.getEquipped.bind(this)
 	}
 
 	expand(field) {
@@ -26,6 +27,20 @@ class Menu extends React.Component {
 				break
 		}
 		this.setState({})
+	}
+
+	equip(item) {
+		this.props.equip(item)
+	}
+
+	getEquipped(number) {
+		if (this.props.player.inventory.equipped) {
+			if (this.props.player.inventory.equipped[number]) {
+				if (this.props.player.inventory.equipped[number].description.imgSrc) {
+					return <img src={this.props.player.inventory.equipped[number].description.imgSrc}/>
+				}
+			}
+		}
 	}
 
 	render() {
@@ -55,14 +70,19 @@ class Menu extends React.Component {
 					</div>
 					
 					<div style={{width: '90%', display: 'flex',flexDirection: reverse, justifyContent: 'space-around'}}>
-						<div id='eqp1' style={{width: this.props.size/3+'px', height: this.props.size/3+'px'}}></div>
-						<div id='eqp2'style={{width: this.props.size/3+'px', height: this.props.size/3+'px'}}></div>
+						<div id='eqp1' style={{width: this.props.size/3+'px', height: this.props.size/3+'px'}}>
+							{this.getEquipped(0)}
+						</div>
+						
+						<div id='eqp2'style={{width: this.props.size/3+'px', height: this.props.size/3+'px'}}>
+							{this.getEquipped(1)}
+						</div>
 					</div>
 
 					<div className= 'Inventory' style= {style} onClick={this.expand.bind(this,'Inventory')}>
 						<span class="fa  fa-caret-up">  Inventory</span>
 						<div className = {this.expandInventory}>
-							{this.props.player.inventory.inventory.map(item=> <img className= 'item' src={item.description.imgSrc}/>)}
+							{this.props.player.inventory.inventory.map(item=> <img onClick= {this.equip.bind(this,item)}className= 'item' src={item.description.imgSrc}/>)}
 						</div>
 					</div>
 
