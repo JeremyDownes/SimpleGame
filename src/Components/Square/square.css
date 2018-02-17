@@ -45,3 +45,16 @@
 	margin-top: 100%;
 	height: 100%;	
 }
+
+.meter {
+	margin: auto;
+	z-index: 2;
+	position: absolute;
+	background-color: red;
+	animation: flashing 1s linear alternate infinite;
+}
+
+@keyframes flashing {
+	from{ background-color: red; }
+	to{ background-color: white; }
+}

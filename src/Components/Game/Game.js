@@ -25,7 +25,7 @@ class Game extends React.Component {
 		this.remainder = window.innerHeight <= window.innerWidth ? window.innerWidth - window.innerHeight : window.innerHeight - window.innerWidth
 		this.points = 0;
 	}
-
+/*
 	clear(x,y) {	
 		this.neighborOffsets.forEach(offset=> {
 			if (this.state.game.hasSafeTiles === 0) {
@@ -41,7 +41,7 @@ class Game extends React.Component {
 			}	
 		})
 	}
-
+*/
 	caught() {
 		let player = this.state.player
 		player.attributes.health -= 5
@@ -107,6 +107,7 @@ class Game extends React.Component {
 		if(this.state.game.obstacleBoard[x][y]===null) {
 			this.destination = [x,y]
 			this.movePlayer()
+			return
 		}
 		else {this.obstacleInteract(x,y)}
 	}
@@ -114,31 +115,34 @@ class Game extends React.Component {
 	combat(x,y)
 		{
 			let obstacle = this.state.game.obstacleBoard[x][y]
-			let moves = obstacle.description.interact.combat
-			let playerAttack = Math.floor(Math.random()*(this.state.player.attributes.strength * this.state.player.inventory.equipped.sword))
+			let moves = obstacle.interact.combat
+			let playerAttack = 5//Math.floor(Math.random()*(this.state.player.attributes.strength * this.state.player.inventory.equipped.sword))
 			let opponentAttack = Math.floor(Math.random()*(moves[Math.floor(Math.random()*moves.length)]))
 			let player = this.state.player
 			let game = this.state.game
 			player.attributes.health -= opponentAttack 
-			obstacle.description.interact.hp -= playerAttack
+			obstacle.interact.remove -= playerAttack
+			if(obstacle.interact.remove < 1) {
+				obstacle = null
+			}
 			game.obstacleBoard[x][y] = obstacle
 			this.setState({player: player, game: game})
 		}
 
 	obstacleInteract(x,y) {
 		let obstacle = this.state.game.obstacleBoard[x][y] 
-		if(obstacle.description.interact) {
-			if(obstacle.description.interact.remove) {
-				if(obstacle.description.interact.combat) {
-				// this.combat returns x,y 
+		if(obstacle.interact) {
+			if(obstacle.interact.remove) {
+				if(obstacle.interact.combat) {
+					this.combat(x,y) 
 				} else {
 				// this.qualify	returns require object  
 				}
 			} else {
-				if(obstacle.description.interact.speak) {
+				if(obstacle.interact.speak) {
 				// this.speak passes conversation object
 				}
-				if(obstacle.description.interact.attribute) {
+				if(obstacle.interact.attribute) {
 				// this.attribute returns attribute object
 				}
 			}

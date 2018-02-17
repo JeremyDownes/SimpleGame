@@ -4,15 +4,6 @@ import '../../reset.css'
 import './board.css'
 
 class Board extends React.Component {
-	constructor(props) {
-		super(props)
-		this.handleClick = this.handleClick.bind(this)
-
-	}
-
-	handleClick(x,y) {
-		this.props.handleClick(x,y);																									  // passes the event from a square to the game
-	}
 
 	render() {
 		let style = {																																		//  Dynamic style
@@ -30,7 +21,7 @@ class Board extends React.Component {
 						return row.map(square=> {
 							iColumn++
 							iColumn=iColumn%this.props.board.playerBoard[0].length;
-							return <Square board={this.props.board} position={[iRow,iColumn]} id={iRow+iColumn} handleClick={this.handleClick} scale={this.props.scale} chase={this.props.chase}/> 
+							return <Square board={this.props.board} position={[iRow,iColumn]} id={iRow+iColumn} handleClick={this.props.handleClick} scale={this.props.scale} chase={this.props.chase}/> 
 						})
 					})
 				}
@@ -40,20 +31,3 @@ class Board extends React.Component {
 }
 
 export default Board;
-/*
-		return (
-			<div className='board' style={style}>																				  // applies our dynamic style dividing our veiwport grid up like we want
-
-				{
-					this.props.board.playerBoard.map(row=> {																	// Start the loop for each row
-						iRow++;																																	// itterate up to (0,-1)
-						return row.map(square=> {																								// Start the loop for each column within the row
-							iColumn++;																														// itterate up to (0,0)
-							iColumn=iColumn%this.props.board.playerBoard[0].length;								// mod by length sets our count back to 0 when it hits the length	
-							return <Square board={this.props.board} position={[iRow,iColumn]} handleClick={this.handleClick} /> ;  //we render a square with a reference to the game board it's position and a reference to an event handler
-						})																																																				
-					})											// the squares render nicely into a grid based on the array dimensions
-				}
-			</div>
-		);
-	*/

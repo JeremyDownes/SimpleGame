@@ -13,9 +13,8 @@ class Square extends React.Component {
 		this.imageStyle = {height: this.props.scale+'px', width: this.props.scale+'px', maxHeight: this.props.scale+'px', maxWidth: this.props.scale+'px', position: 'relative', bottom: '0px'}
 	}
 
-	handleClick(e) {
+	handleClick() {
 		this.props.handleClick(this.props.position[0],this.props.position[1])													// this passes the Game component's playMove method the value of the caller which mutates this.props.playerBoard
-
 	}
 
 	getObject() {
@@ -29,13 +28,29 @@ class Square extends React.Component {
 		} 
 	}
 
-getObstacle() {
+	healthMeter() {
+	let obstacle = this.props.board.obstacleBoard[this.position[0]][this.position[1]]
+
+		if (obstacle) {
+			if(obstacle.interact) {
+				let hp = obstacle.interact.remove
+				if(typeof(hp)==='number'){
+					return <div style={{width: this.props.scale/100*hp+'px', height: this.props.scale/15+'px', marginTop: this.props.scale*-.5+'px'}} className= "meter"></div>
+				}
+			}		
+		}
+	}
+
+	getObstacle() {
 		let obstacle = this.props.board.obstacleBoard[this.position[0]][this.position[1]]
 
 		if (obstacle) {
 			if (obstacle.description) {
 				if (obstacle.description.imgSrc) {
-					return <img className={obstacle.description.type} src={obstacle.description.imgSrc} style={this.imageStyle}/>
+					
+					return (
+					<img className={obstacle.description.type} src={obstacle.description.imgSrc} style={this.imageStyle} onClick={this.handleClick}/>
+					)
 				}
 			}
 		}  
@@ -44,13 +59,13 @@ getObstacle() {
 
 		let content = this.props.board.playerBoard[this.position[0]][this.position[1]]
 
-
 		return (
 		  <div className='square' 
 		  	onClick={this.handleClick} 
 				style={this.style}
 				id = {this.position}
 			>
+			{this.healthMeter()}
 			{this.getObstacle()}
 			{this.getObject()}
 		  </div>
