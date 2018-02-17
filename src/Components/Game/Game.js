@@ -11,7 +11,7 @@ class Game extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {game: new GameLogic(21,21,Obstacles,Objects)
-		, player: { position: [19,1],name: 'W. Wolff', attributes: {type: 'human', level: 1, health: 100, magic: 50,  strength: 9, attributes: []}, experience: {points:0, experiences: []}, inventory: {equipped: {sword: 1}, coin: 0 }}
+		, player: { position: [19,1],name: 'W. Wolff', attributes: {type: 'human', level: 1, health: 100, magic: 50,  strength: 9, attributes: []}, experience: {points:0, experiences: []}, inventory: {equipped: {sword: 1}, coin: 0, inventory: []}}
 		, obstacles: [], objects: [], playerMoving: null
 		 }	// import from db
 		this.playMove = this.playMove.bind(this)
@@ -23,7 +23,7 @@ class Game extends React.Component {
 		this.destination = this.state.player.position
 		this.scale = window.innerHeight <= window.innerWidth ? window.innerHeight / 21 : window.innerWidth / 21
 		this.remainder = window.innerHeight <= window.innerWidth ? window.innerWidth - window.innerHeight : window.innerHeight - window.innerWidth
-		this.points = 0;
+		this.inflicted = 0;
 	}
 /*
 	clear(x,y) {	
@@ -120,14 +120,38 @@ class Game extends React.Component {
 			let opponentAttack = Math.floor(Math.random()*(moves[Math.floor(Math.random()*moves.length)]))
 			let player = this.state.player
 			let game = this.state.game
+			this.inflicted += playerAttack
 			player.attributes.health -= opponentAttack 
 			obstacle.interact.remove -= playerAttack
 			if(obstacle.interact.remove < 1) {
 				obstacle = null
+				player.experience.points += this.inflicted/player.attributes.level
+				this.inflicted = 0
 			}
 			game.obstacleBoard[x][y] = obstacle
 			this.setState({player: player, game: game})
 		}
+
+	qualify(x,y) {
+		let game = this.state.game
+		let player =  this.state.player
+		let needs = this.state.game.obstacleBoard[x][y].interact.remove
+
+		alert(needs)
+		player.inventory.inventory.forEach(item => { 
+			if(item.description.type === needs) {
+				game.obstacleBoard[x][y] = null
+				player.inventory.inventory.splice(player.inventory.inventory.indexOf(needs),1)
+				player.experience.points += 5
+				return
+			}
+		})
+		this.setState({game: game, player: player})
+	}	
+
+	attribute(x,y) {
+
+	}
 
 	obstacleInteract(x,y) {
 		let obstacle = this.state.game.obstacleBoard[x][y] 
@@ -136,7 +160,7 @@ class Game extends React.Component {
 				if(obstacle.interact.combat) {
 					this.combat(x,y) 
 				} else {
-				// this.qualify	returns require object  
+				  this.qualify(x,y)  
 				}
 			} else {
 				if(obstacle.interact.speak) {
@@ -156,6 +180,9 @@ class Game extends React.Component {
 		if(this.state.game.objectBoard[position[0]][position[1]].interact.coin) {
 			player.inventory.coin += this.state.game.objectBoard[position[0]][position[1]].interact.coin
 		} 
+		if(this.state.game.objectBoard[position[0]][position[1]].interact.gain) {
+			player.inventory.inventory.push(this.state.game.objectBoard[position[0]][position[1]])
+		}
 		if(this.state.game.objectBoard[position[0]][position[1]].interact.remove) {
 			game.objectBoard[position[0]][position[1]] = null
 		}			
@@ -221,7 +248,7 @@ class Game extends React.Component {
 				<div className = 'ads' style={sideBarSize} ></div>	
 				<Player position = {this.state.playerPosition} move={this.move} change={this.state.playerChange} scale = {this.scale}/>
 				<Board handleClick={this.playMove} board={this.state.game} startGame={this.startGame} scale={this.scale} chase={this.chase}/>
-				<Menu coin={this.state.player.inventory.coin} health={this.state.player.attributes.health} style={sideBarSize} direction={direction} size={this.remainder/2}/>
+				<Menu player={this.state.player} style={sideBarSize} direction={direction} size={this.remainder/2}/>
 			</div>
 		)
 	}

@@ -49,7 +49,7 @@ class Square extends React.Component {
 				if (obstacle.description.imgSrc) {
 					
 					return (
-					<img className={obstacle.description.type} src={obstacle.description.imgSrc} style={this.imageStyle} onClick={this.handleClick}/>
+					<img className={obstacle.description.type} src={obstacle.description.imgSrc} style={this.imageStyle}/>
 					)
 				}
 			}
