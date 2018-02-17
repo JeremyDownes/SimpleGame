@@ -9,7 +9,9 @@ class Obstacle extends React.Component {
 	}
 
 	chase() {
-		setTimeout(this.props.chase(this.props.position),Math.random()*300)
+		if(this.props.chase){
+			setTimeout(this.props.chase(this.props.position),Math.random()*300)
+		}
 	}
 
 	componentWillUnmount() {

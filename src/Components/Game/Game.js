@@ -97,7 +97,7 @@ class Game extends React.Component {
 
 		if (this.destination[0] !== this.state.player.position[0] || this.destination[1] !== this.state.player.position[1] ){
 			if (!this.state.playerMoving) {
-				this.state.playerMoving = setInterval(function() {this.movePlayer()}.bind(this) ,300)
+				this.setState({playerMoving: setInterval(function() {this.movePlayer()}.bind(this) ,300)})
 			}
 			this.move(keyCode)
 		} 
@@ -191,17 +191,16 @@ class Game extends React.Component {
 			nextPosition[1] = this.state.player.position[1]
 			nextPosition = this.state.game.doesPositionExist(keyCode[1],nextPosition)
 
-			if (this.state.game.canPlayerEnter(nextPosition))
-
+			if (this.state.game.canPlayerEnter(nextPosition)) {
 				if (this.state.game.objectBoard[nextPosition[0]][nextPosition[1]]) {
-					player = this.objectInteract(nextPosition)
+					this.objectInteract(nextPosition)
 				}
 				player.position = nextPosition
 				this.setState({player: player})	
 					document.getElementById(`${nextPosition[0]},${nextPosition[1]}`).appendChild(document.getElementById('player'))
 				return true // animation
-			}	
-		
+			}
+		}		
 	} 
 
 

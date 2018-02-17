@@ -1,6 +1,5 @@
 import React from 'react'
 import Square from '../Square/Square'
-import Player from '../Player/Player'
 import '../../reset.css'
 import './board.css'
 

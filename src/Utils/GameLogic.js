@@ -45,7 +45,6 @@ export class GameLogic {
 					break; 
 			}
 			return nextPosition
-			nextPosition = null
 	}
 
 	canPlayerEnter(position) {
