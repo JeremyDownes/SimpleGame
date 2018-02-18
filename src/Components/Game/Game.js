@@ -15,34 +15,30 @@ class Game extends React.Component {
 		, obstacles: [], objects: [], playerMoving: null
 		 }	// import from db
 		this.playMove = this.playMove.bind(this)
+		this.proximity = this.proximity.bind(this)
 		this.movePlayer = this.movePlayer.bind(this)
 		this.equip = this.equip.bind(this)
 		this.neighborOffsets = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]]
 		this.move = this.move.bind(this)
 		this.chase = this.chase.bind(this)
 		this.direction = [0,-1]
+		this.canInteract = false;
 		this.destination = this.state.player.position
 		this.scale = window.innerHeight <= window.innerWidth ? window.innerHeight / 21 : window.innerWidth / 21
 		this.remainder = window.innerHeight <= window.innerWidth ? window.innerWidth - window.innerHeight : window.innerHeight - window.innerWidth
 		this.inflicted = 0;
 	}
-/*
-	clear(x,y) {	
-		this.neighborOffsets.forEach(offset=> {
-			if (this.state.game.hasSafeTiles === 0) {
-				return
-			}
+
+	proximity(x,y) {	
+		return this.neighborOffsets.forEach(offset=> {
 			let fX = offset[0]+x
 			let fY = offset[1]+y
-			if(fX >= 0 && fY >= 0 && fX < this.state.game.playerBoard.length && fY < this.state.game.playerBoard[0].length) {
-				if(this.state.game.playerBoard[fX][fY] === ' ') {
-					this.playMove(fX,fY)
-					return
-				}
-			}	
+				if(fX===this.state.player.position[0] && fY === this.state.player.position[1]) {	
+					this.canInteract = true
+				}	
 		})
 	}
-*/
+
 	caught() {
 		let player = this.state.player
 		player.attributes.health -= 5
@@ -105,7 +101,6 @@ class Game extends React.Component {
 			(this.state.player.position[0] - this.destination[0]) >= (this.destination[1] - this.state.player.position[1]) ? keyCode=[38,39] : keyCode=[39,38] 
 		}
 		
-
 		if (this.destination[0] !== this.state.player.position[0] || this.destination[1] !== this.state.player.position[1] ){
 			if (!this.state.playerMoving) {
 				this.setState({playerMoving: setInterval(function() {this.movePlayer()}.bind(this) ,300)})
@@ -125,12 +120,17 @@ class Game extends React.Component {
 
 	combat(x,y)
 		{
-			let obstacle = this.state.game.obstacleBoard[x][y]
-			let moves = obstacle.interact.combat
-			let playerAttack = 5//Math.floor(Math.random()*(this.state.player.attributes.strength * this.state.player.inventory.equipped.sword))
-			let opponentAttack = Math.floor(Math.random()*(moves[Math.floor(Math.random()*moves.length)]))
 			let player = this.state.player
 			let game = this.state.game
+			let obstacle = game.obstacleBoard[x][y]
+			let moves = obstacle.interact.combat
+			moves = moves[Math.floor(Math.random()*moves.length)]
+			moves = moves[Object.keys(moves)[0]]
+			let playerAttack = player.attributes.level
+			if(this.state.player.inventory.equipped[0]){if(this.state.player.inventory.equipped[0].damage){ playerAttack *= this.state.player.inventory.equipped[0].damage}}
+			if(this.state.player.inventory.equipped[1]){if(this.state.player.inventory.equipped[1].damage){ playerAttack *= this.state.player.inventory.equipped[1].damage}}
+			let opponentAttack = Math.floor(Math.random()*moves) 
+			console.log(opponentAttack)
 			this.inflicted += playerAttack
 			player.attributes.health -= opponentAttack 
 			obstacle.interact.remove -= playerAttack
@@ -147,19 +147,22 @@ class Game extends React.Component {
 		let game = this.state.game
 		let player =  this.state.player
 		let needs = this.state.game.obstacleBoard[x][y].interact.remove
-
-		if(player.inventory.equipped[0].description.type === needs) { 
-				game.obstacleBoard[x][y] = null
-				player.inventory.equipped.splice(0,1)
-				player.experience.points += 5
-			} else {
-				if(player.inventory.equipped[1].description.type === needs) { 
+		if (player.inventory.equipped[0]) {
+			if(player.inventory.equipped[0].description.type === needs) { 
 					game.obstacleBoard[x][y] = null
-					player.inventory.equipped.splice(1,1)
+					player.inventory.equipped.splice(0,1)
 					player.experience.points += 5
+			} else {
+				if (player.inventory.equipped[1]) {
+				
+					if(player.inventory.equipped[1].description.type === needs) { 
+						game.obstacleBoard[x][y] = null
+						player.inventory.equipped.splice(1,1)
+						player.experience.points += 5
+					}
 				}	
 			}
-
+		}
 		this.setState({game: game, player: player})
 	}	
 
@@ -192,26 +195,32 @@ class Game extends React.Component {
 	}
 
 	obstacleInteract(x,y) {
-		let obstacle = this.state.game.obstacleBoard[x][y] 
-		if(obstacle.interact) {
-			if(obstacle.interact.remove) {
-				if(obstacle.interact.combat) {
-					this.combat(x,y) 
+		this.proximity(x,y)
+		if(this.canInteract) {
+
+			let obstacle = this.state.game.obstacleBoard[x][y] 
+			if(obstacle.interact) {
+				if(obstacle.interact.remove) {
+					if(obstacle.interact.combat) {
+						this.combat(x,y) 
+					} else {
+					  this.qualify(x,y)  
+					}
 				} else {
-				  this.qualify(x,y)  
+					if(obstacle.interact.speak) {
+					// this.speak passes conversation object
+					}
+					if(obstacle.interact.experience) {
+						this.experience(x,y)
+					}
+					if(obstacle.interact.attribute) {
+					  this.attribute(x,y)
+					}
 				}
-			} else {
-				if(obstacle.interact.speak) {
-				// this.speak passes conversation object
-				}
-				if(obstacle.interact.experience) {
-					this.experience(x,y)
-				}
-				if(obstacle.interact.attribute) {
-				  this.attribute(x,y)
-				}
-			}
-		}
+			}	
+			this.canInteract= false
+			return		
+		} else {}
 	}
 
 	objectInteract (position)
