@@ -1,5 +1,5 @@
 export const Objects = [	
-{ location: [0,0], description: {type:'sword', imgSrc: require('../resources/images/objects/sword.png')}, interact: {"gain":"sword","remove":true}, damage: 3},
+{ location: [0,0], description: {type:'sword', imgSrc: require('../resources/images/objects/sword.png')}, interact: {"gain":"sword","remove":true, damage: 3}},
 
 { location: [2,15], description: {type:'chest', imgSrc: require('../resources/images/objects/chest.png')}, interact: {"chance":[{"coin":50},{"arrow":20},{"coin":200},{"sword":100}],"remove":true,"requires":"key"}},
 

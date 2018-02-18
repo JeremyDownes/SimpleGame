@@ -127,10 +127,9 @@ class Game extends React.Component {
 			moves = moves[Math.floor(Math.random()*moves.length)]
 			moves = moves[Object.keys(moves)[0]]
 			let playerAttack = player.attributes.level
-			if(this.state.player.inventory.equipped[0]){if(this.state.player.inventory.equipped[0].damage){ playerAttack *= this.state.player.inventory.equipped[0].damage}}
-			if(this.state.player.inventory.equipped[1]){if(this.state.player.inventory.equipped[1].damage){ playerAttack *= this.state.player.inventory.equipped[1].damage}}
+			if(this.state.player.inventory.equipped[0]){if(this.state.player.inventory.equipped[0].interact.damage){ playerAttack *= this.state.player.inventory.equipped[0].interact.damage}}
+			if(this.state.player.inventory.equipped[1]){if(this.state.player.inventory.equipped[1].interact.damage){ playerAttack *= this.state.player.inventory.equipped[1].interact.damage}}
 			let opponentAttack = Math.floor(Math.random()*moves) 
-			console.log(opponentAttack)
 			this.inflicted += playerAttack
 			player.attributes.health -= opponentAttack 
 			obstacle.interact.remove -= playerAttack
@@ -141,6 +140,10 @@ class Game extends React.Component {
 			}
 			game.obstacleBoard[x][y] = obstacle
 			this.setState({player: player, game: game})
+			if (this.state.player.attributes.health <= 0) {
+				alert('You Died')
+				window.location.reload()
+			}
 		}
 
 	qualify(x,y) {

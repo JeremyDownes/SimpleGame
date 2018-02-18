@@ -80,14 +80,14 @@ class Menu extends React.Component {
 					</div>
 
 					<div className= 'Inventory' style= {style} onClick={this.expand.bind(this,'Inventory')}>
-						<span class="fa  fa-caret-up">  Inventory</span>
+						<span className="fa  fa-caret-down" onClick={(e)=> e.target.classList.toggle('fa-caret-up')}>  Inventory</span>
 						<div className = {this.expandInventory}>
 							{this.props.player.inventory.inventory.map(item=> <img onClick= {this.equip.bind(this,item)}className= 'item' src={item.description.imgSrc}/>)}
 						</div>
 					</div>
 
 					<div className= 'Attributes' style= {style} onClick={this.expand.bind(this,'Attributes')}>
-						<span class="fa  fa-caret-up">  Attributes</span>
+						<span className="fa  fa-caret-down" onClick={(e)=> e.target.classList.toggle('fa-caret-up')}>  Attributes</span>
 						<div className = {this.expandAttributes}>
 							<ul style={{display: 'block', width: '200%'}}>
 								<li>Class: {this.props.player.attributes.type}</li>
@@ -107,7 +107,7 @@ class Menu extends React.Component {
 					</div>
 
 					<div className= 'Experience' style= {style} onClick={this.expand.bind(this,'Experience')}>
-						<span class="fa  fa-caret-up">  Experience</span>
+						<span className="fa  fa-caret-down" onClick={(e)=> e.target.classList.toggle('fa-caret-up')}>  Experience</span>
 						<div className = {this.expandExperience}>
 							<ul>
 								<li>Points: {this.props.player.experience.points}</li>
