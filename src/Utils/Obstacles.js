@@ -241,7 +241,7 @@ export const obstacles = [
 
 { location: [3,15], description: {type:'fire', imgSrc: require('../resources/images/obstacles/fire.gif')}, interact: {"attribute":{"health":{"burn":-10}},"remove":"water"}},
 
-{ location: [20,20], description: {type:'water', imgSrc: require('../resources/images/obstacles/water.png')}, interact: {"attribute":{"wet":40},"remove":false}},
+{ location: [20,20], description: {type:'water', imgSrc: require('../resources/images/obstacles/water.gif')}, interact: {"attribute":{"wet":40},"remove":false}},
 
 { location: [11,8], description: {type:'ridingHood', imgSrc: require('../resources/images/obstacles/riding-hood.gif')}, interact: {"combat":[{"claw":15},{"bite":30}],"remove":20}},
 
