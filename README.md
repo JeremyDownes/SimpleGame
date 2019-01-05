@@ -1,3 +1,0 @@
-Maze Game
-
-Reactjs implementation of an old standard. I wish we had smartphones when I was 12... 
